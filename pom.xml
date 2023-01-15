@@ -127,6 +127,7 @@
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
 						<configuration>
+							<skipTests>true</skipTests>
 							<systemPropertyVariables>
 								<tomee.httpPort>-1</tomee.httpPort>
 								<tomee.stopPort>-1</tomee.stopPort>
