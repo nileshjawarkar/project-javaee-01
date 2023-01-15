@@ -57,7 +57,6 @@ public class TestCarCreatedEventBroadcast {
 	@After
 	public void clear() {
 		client.close();
-		mses.shutdown();
 	}
 
 	public void createCar() {
@@ -99,9 +98,11 @@ public class TestCarCreatedEventBroadcast {
 			eventRecieved += 1;
 		});
 		mses.schedule(() -> createCar(), 1, TimeUnit.SECONDS);
+
 		source.open();
 		LockSupport.parkNanos(2000000000L);
 		source.close();
+
 		assertEquals(4, eventRecieved);
 	}
 }
