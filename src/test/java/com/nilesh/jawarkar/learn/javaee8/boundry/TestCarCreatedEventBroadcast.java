@@ -40,7 +40,7 @@ public class TestCarCreatedEventBroadcast {
 		        .addPackage("com.nilesh.jawarkar.learn.javaee8.control")
 		        .addPackage("com.nilesh.jawarkar.learn.javaee8.entity")
 		        .addAsResource("persistence.xml", "META-INF/persistence.xml")
-		        .addAsResource("beans.xml", "META-INF/beans.xml");
+		        .addAsWebInfResource("beans.xml", "beans.xml");
 	}
 
 	@ArquillianResource
@@ -57,6 +57,7 @@ public class TestCarCreatedEventBroadcast {
 	@After
 	public void clear() {
 		client.close();
+		mses.shutdown();
 	}
 
 	public void createCar() {

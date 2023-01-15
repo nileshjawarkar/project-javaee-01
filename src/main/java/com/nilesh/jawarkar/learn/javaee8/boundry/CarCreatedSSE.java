@@ -20,7 +20,7 @@ public class CarCreatedSSE {
 
 	// -- 1) inject sse context
 	// -- Injection not working in tomee
-	// @Context
+	@Context
 	Sse            sse;
 
 	SseBroadcaster broadcaster = null;
@@ -28,7 +28,9 @@ public class CarCreatedSSE {
 	// -- 2) create broadcaster
 	@PostConstruct
 	public void init() {
-		// broadcaster = sse.newBroadcaster();
+		if (sse != null) {
+			broadcaster = sse.newBroadcaster();
+		}
 	}
 
 	// -- 4) Broadcast events
