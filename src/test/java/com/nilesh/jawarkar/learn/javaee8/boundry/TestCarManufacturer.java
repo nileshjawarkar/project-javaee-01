@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.locks.LockSupport;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -38,12 +39,12 @@ public class TestCarManufacturer {
 	@Deployment
 	public static WebArchive createDeployment() {
 		return ShrinkWrap.create(WebArchive.class, "carman.war")
-		        .addPackage("com.nilesh.jawarkar.learn.javaee8.boundry")
-		        .addPackage("com.nilesh.jawarkar.learn.javaee8.config")
-		        .addPackage("com.nilesh.jawarkar.learn.javaee8.control")
-		        .addPackage("com.nilesh.jawarkar.learn.javaee8.entity")
-		        .addAsResource("persistence.xml", "META-INF/persistence.xml")
-		        .addAsWebInfResource("beans.xml", "beans.xml");
+				.addPackage("com.nilesh.jawarkar.learn.javaee8.boundry")
+				.addPackage("com.nilesh.jawarkar.learn.javaee8.config")
+				.addPackage("com.nilesh.jawarkar.learn.javaee8.control")
+				.addPackage("com.nilesh.jawarkar.learn.javaee8.entity")
+				.addAsResource("persistence.xml", "META-INF/persistence.xml")
+				.addAsWebInfResource("beans.xml", "beans.xml");
 	}
 
 	@AfterClass
@@ -58,7 +59,7 @@ public class TestCarManufacturer {
 	}
 
 	@PersistenceContext
-	EntityManager   entityManager;
+	EntityManager entityManager;
 
 	@Inject
 	UserTransaction utx;
@@ -68,13 +69,13 @@ public class TestCarManufacturer {
 
 	@Before
 	public void init() throws NotSupportedException, SystemException,
-	        IllegalStateException, SecurityException, HeuristicMixedException,
-	        HeuristicRollbackException, RollbackException {
-		utx.begin();
-		entityManager.joinTransaction();
+			IllegalStateException, SecurityException, HeuristicMixedException,
+			HeuristicRollbackException, RollbackException {
+		this.utx.begin();
+		this.entityManager.joinTransaction();
 		System.out.println("Dumping old records...");
-		entityManager.createQuery("delete from Car").executeUpdate();
-		utx.commit();
+		this.entityManager.createQuery("delete from Car").executeUpdate();
+		this.utx.commit();
 	}
 
 	@Test
@@ -82,13 +83,14 @@ public class TestCarManufacturer {
 		final Specification spec = new Specification();
 		spec.setColor(Color.BLUE);
 		spec.setEngineType(EngineType.DIESEL);
-		final Car car = carManufacturer.createCar(spec);
+		final Car car = this.carManufacturer.createCar(spec);
 		assertNotNull(car);
 
-		final List<Car> cars = carManufacturer.retrieveCars();
+		final List<Car> cars = this.carManufacturer.retrieveCars();
 		assertNotNull(cars);
 		assertEquals(cars.size(), 1);
 
+		LockSupport.parkNanos(6000000000L);
 	}
 
 	@Test
@@ -96,24 +98,28 @@ public class TestCarManufacturer {
 		final Specification spec01 = new Specification();
 		spec01.setColor(Color.BLUE);
 		spec01.setEngineType(EngineType.DIESEL);
-		carManufacturer.createCar(spec01);
+		this.carManufacturer.createCar(spec01);
 
 		final Specification spec02 = new Specification();
 		spec02.setColor(Color.RED);
 		spec02.setEngineType(EngineType.DIESEL);
-		carManufacturer.createCar(spec02);
-		carManufacturer.createCar(spec02);
+		this.carManufacturer.createCar(spec02);
+		this.carManufacturer.createCar(spec02);
 
-		final List<Car> cars = carManufacturer.retrieveCars("color", Color.BLUE.name());
+		final List<Car> cars = this.carManufacturer.retrieveCars("color",
+				Color.BLUE.name());
 		assertNotNull(cars);
 		assertEquals(1, cars.size());
 
-		final List<Car> cars2 = carManufacturer.retrieveCars("color", Color.RED.name());
+		final List<Car> cars2 = this.carManufacturer.retrieveCars("color",
+				Color.RED.name());
 		assertNotNull(cars2);
 		assertEquals(2, cars2.size());
 
-		final List<Car> cars3 = carManufacturer.retrieveCars();
+		final List<Car> cars3 = this.carManufacturer.retrieveCars();
 		assertNotNull(cars3);
 		assertEquals(3, cars3.size());
+
+		LockSupport.parkNanos(6000000000L);
 	}
 }

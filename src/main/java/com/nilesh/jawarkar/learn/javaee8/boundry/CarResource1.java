@@ -1,7 +1,11 @@
 package com.nilesh.jawarkar.learn.javaee8.boundry;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
+import javax.annotation.Resource;
+import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -10,6 +14,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.container.AsyncResponse;
+import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.MediaType;
 
 import com.nilesh.jawarkar.learn.javaee8.entity.Car;
@@ -23,14 +29,24 @@ public class CarResource1 {
 	@Inject
 	CarManufacturer carManufacturer;
 
+	@Resource
+	ManagedExecutorService mes;
+
 	@POST
-	public Car createCar(@Valid @NotNull Specification specs) {
-		return carManufacturer.createCar(specs);
+	public void createCar(@Valid @NotNull final Specification specs,
+			@Suspended final AsyncResponse response) {
+		this.mes.execute(() -> response.resume(this.carManufacturer.createCar(specs)));
 	}
 
+	/*
+	 * @GET public List<Car> retrieveCars() { return
+	 * this.carManufacturer.retrieveCars(); }
+	 */
+
 	@GET
-	public List<Car> retrieveCars() {
-		return carManufacturer.retrieveCars();
+	public CompletionStage<List<Car>> retrieveCars01() {
+		return CompletableFuture.supplyAsync(() -> this.carManufacturer.retrieveCars(),
+				this.mes);
 	}
 
 }

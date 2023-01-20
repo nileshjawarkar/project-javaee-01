@@ -49,12 +49,12 @@ public class TestCarResource1 {
 	@Deployment
 	public static WebArchive createDeployment() {
 		return ShrinkWrap.create(WebArchive.class, "carman.war")
-		        .addPackage("com.nilesh.jawarkar.learn.javaee8.boundry")
-		        .addPackage("com.nilesh.jawarkar.learn.javaee8.config")
-		        .addPackage("com.nilesh.jawarkar.learn.javaee8.control")
-		        .addPackage("com.nilesh.jawarkar.learn.javaee8.entity")
-		        .addAsResource("persistence.xml", "META-INF/persistence.xml")
-		        .addAsWebInfResource("beans.xml", "beans.xml");
+				.addPackage("com.nilesh.jawarkar.learn.javaee8.boundry")
+				.addPackage("com.nilesh.jawarkar.learn.javaee8.config")
+				.addPackage("com.nilesh.jawarkar.learn.javaee8.control")
+				.addPackage("com.nilesh.jawarkar.learn.javaee8.entity")
+				.addAsResource("persistence.xml", "META-INF/persistence.xml")
+				.addAsWebInfResource("beans.xml", "beans.xml");
 	}
 
 	@AfterClass
@@ -69,68 +69,70 @@ public class TestCarResource1 {
 	}
 
 	@PersistenceContext
-	EntityManager   entityManager;
+	EntityManager entityManager;
 
 	@Inject
 	UserTransaction utx;
 
 	@ArquillianResource
-	private URL     url;
+	private URL url;
 
-	WebTarget       createAndQueryTarget = null;
-	Client          client               = null;
+	WebTarget createAndQueryTarget = null;
+	Client    client               = null;
 
 	@After
 	public void cleanUp() {
-		client.close();
+		this.client.close();
 	}
 
 	@Before
 	public void init() throws NotSupportedException, SystemException,
-	        IllegalStateException, SecurityException, HeuristicMixedException,
-	        HeuristicRollbackException, RollbackException {
-		utx.begin();
-		entityManager.joinTransaction();
+			IllegalStateException, SecurityException, HeuristicMixedException,
+			HeuristicRollbackException, RollbackException {
+		this.utx.begin();
+		this.entityManager.joinTransaction();
 		System.out.println("Dumping old records...");
-		entityManager.createQuery("delete from Car").executeUpdate();
-		utx.commit();
+		this.entityManager.createQuery("delete from Car").executeUpdate();
+		this.utx.commit();
 
-		String       strURL    = "http://localhost:8080/carman/resources/cars";
+		String strURL = "http://localhost:8080/carman/resources/cars";
 		final String startPort = System.getProperty("tomee.httpPort");
-		if (url != null) {
-			strURL = url.toString() + "/resources/cars";
+		if (this.url != null) {
+			strURL = this.url.toString() + "/resources/cars";
 		} else if (startPort != null) {
 			strURL = "http://localhost:" + startPort + "/carman/resources/cars";
 		}
 		System.out.println("URL = " + strURL);
-		client               = ClientBuilder.newClient();
-		createAndQueryTarget = client.target(strURL);
+		this.client = ClientBuilder.newClient();
+		this.createAndQueryTarget = this.client.target(strURL);
 	}
 
 	@Test
 	public void should_create_and_retrieve_car() {
-		final JsonObject obj     = Json.createObjectBuilder()
-		        .add("engineType", EngineType.DIESEL.name())
-		        .add("color", Color.BLUE.name()).build();
+		// -- Creation
+		final JsonObject obj = Json.createObjectBuilder()
+				.add("engineType", EngineType.DIESEL.name())
+				.add("color", Color.BLUE.name()).build();
 
-		Response         postRes = createAndQueryTarget
-		        .request(MediaType.APPLICATION_JSON).post(Entity.json(obj));
-		final Car        car01   = postRes.readEntity(Car.class);
+		Response postRes = this.createAndQueryTarget.request(MediaType.APPLICATION_JSON)
+				.post(Entity.json(obj));
+		final Car car01 = postRes.readEntity(Car.class);
 		assertNotNull(car01);
 
-		postRes = createAndQueryTarget.request(MediaType.APPLICATION_JSON)
-		        .post(Entity.json(obj));
+		postRes = this.createAndQueryTarget.request(MediaType.APPLICATION_JSON)
+				.post(Entity.json(obj));
 		assertNotNull(postRes);
 		final Car car02 = postRes.readEntity(Car.class);
 		assertNotNull(car02);
 
-		final Response getRes = createAndQueryTarget.request(MediaType.APPLICATION_JSON)
-		        .get();
+		// -- Retrieval
+		final Response getRes = this.createAndQueryTarget
+				.request(MediaType.APPLICATION_JSON).get();
 		assertNotNull(getRes);
 
 		final GenericType<List<Car>> genCarList = new GenericType<List<Car>>() {
-												};
-		final List<Car>              carList    = getRes.readEntity(genCarList);
+		};
+		final List<Car> carList = getRes.readEntity(genCarList);
 		assertNotNull(carList);
 		assertEquals(2, carList.size());
 		carList.forEach(c -> System.out.println(c.getId()));
