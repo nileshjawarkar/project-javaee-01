@@ -21,22 +21,22 @@ public class CarCreatedSSE {
 	// -- 1) inject sse context
 	// -- Injection not working in tomee
 	@Context
-	Sse            sse;
+	Sse sse;
 
 	SseBroadcaster broadcaster = null;
 
 	// -- 2) create broadcaster
 	@PostConstruct
 	public void init() {
-		if (sse != null) {
-			broadcaster = sse.newBroadcaster();
+		if (this.sse != null) {
+			this.broadcaster = this.sse.newBroadcaster();
 		}
 	}
 
 	// -- 4) Broadcast events
 	public void onCarCreation(@Observes final CarCreated carCreated) {
-		if (broadcaster != null) {
-			broadcaster.broadcast(sse.newEvent(carCreated.getIdentifier()));
+		if (this.broadcaster != null) {
+			this.broadcaster.broadcast(this.sse.newEvent(carCreated.getIdentifier()));
 		}
 	}
 
@@ -44,16 +44,11 @@ public class CarCreatedSSE {
 	@GET
 	@Produces(MediaType.SERVER_SENT_EVENTS)
 	public void registerForEvent(@Context final Sse sse,
-	        @Context final SseEventSink clientEventSink) {
-		if (broadcaster == null) {
-			this.sse    = sse;
-			broadcaster = sse.newBroadcaster();
+			@Context final SseEventSink clientEventSink) {
+		if (this.broadcaster == null) {
+			this.sse = sse;
+			this.broadcaster = sse.newBroadcaster();
 		}
-		broadcaster.register(clientEventSink);
+		this.broadcaster.register(clientEventSink);
 	}
-
-	// -- Injection not working in tomee
-	/*
-	 * public void setSSE(@Context final Sse sse) { this.sse = sse; }
-	 */
 }

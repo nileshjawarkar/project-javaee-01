@@ -12,10 +12,12 @@ import javax.persistence.PersistenceContext;
 
 import com.nilesh.jawarkar.learn.javaee8.control.CarFactory;
 import com.nilesh.jawarkar.learn.javaee8.control.CarProcessing;
+import com.nilesh.jawarkar.learn.javaee8.control.NewTech;
 import com.nilesh.jawarkar.learn.javaee8.control.TrackColor;
 import com.nilesh.jawarkar.learn.javaee8.entity.Car;
 import com.nilesh.jawarkar.learn.javaee8.entity.CarCreated;
 import com.nilesh.jawarkar.learn.javaee8.entity.Color;
+import com.nilesh.jawarkar.learn.javaee8.entity.EngineType;
 import com.nilesh.jawarkar.learn.javaee8.entity.InvalidColor;
 import com.nilesh.jawarkar.learn.javaee8.entity.Specification;
 
@@ -33,6 +35,10 @@ public class CarManufacturer {
 	@Inject
 	Event<CarCreated> carCreatedEvent;
 
+	@NewTech
+	@Inject
+	Event<CarCreated> newTechCarCreatedEvent;
+
 	@Inject
 	CarProcessing carProcessing;
 
@@ -48,11 +54,14 @@ public class CarManufacturer {
 		final Car car = this.carFactory.createCar(spec);
 		// -- carRepository.save(car);
 		this.entityManager.persist(car);
-		this.carCreatedEvent.fireAsync(new CarCreated(car.getId()));
+		if (car.getEngineType() == EngineType.ELECTRIC) {
+			this.newTechCarCreatedEvent.fireAsync(new CarCreated(car.getId()));
+		} else {
+			this.carCreatedEvent.fire(new CarCreated(car.getId()));
+		}
 		// -- this.carProcessing.processAsync(car);
 
 		this.mes.execute(() -> this.carProcessing.process(car));
-
 		return car;
 	}
 

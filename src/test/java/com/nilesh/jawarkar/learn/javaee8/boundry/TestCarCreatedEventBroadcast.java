@@ -35,28 +35,28 @@ public class TestCarCreatedEventBroadcast {
 	@Deployment
 	public static WebArchive createDeployment() {
 		return ShrinkWrap.create(WebArchive.class, "carman.war")
-		        .addPackage("com.nilesh.jawarkar.learn.javaee8.boundry")
-		        .addPackage("com.nilesh.jawarkar.learn.javaee8.config")
-		        .addPackage("com.nilesh.jawarkar.learn.javaee8.control")
-		        .addPackage("com.nilesh.jawarkar.learn.javaee8.entity")
-		        .addAsResource("persistence.xml", "META-INF/persistence.xml")
-		        .addAsWebInfResource("beans.xml", "beans.xml");
+				.addPackage("com.nilesh.jawarkar.learn.javaee8.boundry")
+				.addPackage("com.nilesh.jawarkar.learn.javaee8.config")
+				.addPackage("com.nilesh.jawarkar.learn.javaee8.control")
+				.addPackage("com.nilesh.jawarkar.learn.javaee8.entity")
+				.addAsResource("persistence.xml", "META-INF/persistence.xml")
+				.addAsWebInfResource("beans.xml", "beans.xml");
 	}
 
 	@ArquillianResource
-	private URL                     url;
+	private URL url;
 
-	private WebTarget               sseTarget;
-	private WebTarget               createTarget;
-	private Client                  client;
-	private int                     eventRecieved = 0;
+	private WebTarget sseTarget;
+	private WebTarget createTarget;
+	private Client    client;
+	private int       eventRecieved = 0;
 
 	@Resource(name = "DefaultManagedExecutorService")
 	ManagedScheduledExecutorService mses;
 
 	@After
 	public void clear() {
-		client.close();
+		this.client.close();
 	}
 
 	public void createCar() {
@@ -70,39 +70,42 @@ public class TestCarCreatedEventBroadcast {
 		final Specification spec = new Specification();
 		spec.setColor(color);
 		spec.setEngineType(engineType);
-		createTarget.request(MediaType.APPLICATION_JSON).post(Entity.json(spec));
+		this.createTarget.request(MediaType.APPLICATION_JSON).post(Entity.json(spec));
 	}
 
 	@Before
 	public void init() {
 
-		String       strURL    = "http://localhost:8080/carman/resources";
+		String strURL = "http://localhost:8080/carman/resources";
 		final String startPort = System.getProperty("tomee.httpPort");
-		if (url != null) {
-			strURL = url.toString() + "/resources";
+		if (this.url != null) {
+			strURL = this.url.toString() + "/resources";
 		} else if (startPort != null) {
 			strURL = "http://localhost:" + startPort + "/carman/resources";
 		}
 		System.out.println("URL = " + strURL);
-		client       = ClientBuilder.newClient();
-		sseTarget    = client.target(strURL + "/car-created-sse");
-		createTarget = client.target(strURL + "/cars");
+		this.client = ClientBuilder.newClient();
+		this.sseTarget = this.client.target(strURL + "/car-created-sse");
+		this.createTarget = this.client.target(strURL + "/cars");
 
 	}
 
 	@Test
 	public void testCarCreatedSSE() {
-		final SseEventSource source = SseEventSource.target(sseTarget).build();
+		final SseEventSource source = SseEventSource.target(this.sseTarget).build();
 		source.register(event -> {
 			System.out.println(">>> " + event.readData());
-			eventRecieved += 1;
+			this.eventRecieved += 1;
 		});
-		mses.schedule(() -> createCar(), 1, TimeUnit.SECONDS);
+		this.mses.schedule(() -> createCar(), 1, TimeUnit.SECONDS);
 
 		source.open();
-		LockSupport.parkNanos(2000000000L);
+		LockSupport.parkNanos(7000000000L);
 		source.close();
 
-		assertEquals(4, eventRecieved);
+		// -- For Electric call async type event handler is used, so its
+		// -- event will not sent by SSE
+		// -- assertEquals(4, this.eventRecieved);
+		assertEquals(3, this.eventRecieved);
 	}
 }

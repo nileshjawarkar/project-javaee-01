@@ -102,7 +102,7 @@ public class TestCarManufacturer {
 
 		final Specification spec02 = new Specification();
 		spec02.setColor(Color.RED);
-		spec02.setEngineType(EngineType.DIESEL);
+		spec02.setEngineType(EngineType.ELECTRIC);
 		this.carManufacturer.createCar(spec02);
 		this.carManufacturer.createCar(spec02);
 
@@ -120,6 +120,6 @@ public class TestCarManufacturer {
 		assertNotNull(cars3);
 		assertEquals(3, cars3.size());
 
-		LockSupport.parkNanos(6000000000L);
+		LockSupport.parkNanos(7000000000L);
 	}
 }
