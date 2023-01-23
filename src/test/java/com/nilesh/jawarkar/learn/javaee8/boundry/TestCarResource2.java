@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.locks.LockSupport;
 import java.util.stream.Collectors;
 
 import javax.json.Json;
@@ -42,12 +43,12 @@ public class TestCarResource2 {
 	@Deployment
 	public static WebArchive createDeployment() {
 		return ShrinkWrap.create(WebArchive.class, "carman.war")
-		        .addPackage("com.nilesh.jawarkar.learn.javaee8.boundry")
-		        .addPackage("com.nilesh.jawarkar.learn.javaee8.config")
-		        .addPackage("com.nilesh.jawarkar.learn.javaee8.control")
-		        .addPackage("com.nilesh.jawarkar.learn.javaee8.entity")
-		        .addAsResource("persistence.xml", "META-INF/persistence.xml")
-		        .addAsWebInfResource("beans.xml", "beans.xml");
+				.addPackage("com.nilesh.jawarkar.learn.javaee8.boundry")
+				.addPackage("com.nilesh.jawarkar.learn.javaee8.config")
+				.addPackage("com.nilesh.jawarkar.learn.javaee8.control")
+				.addPackage("com.nilesh.jawarkar.learn.javaee8.entity")
+				.addAsResource("persistence.xml", "META-INF/persistence.xml")
+				.addAsWebInfResource("beans.xml", "beans.xml");
 	}
 
 	@AfterClass
@@ -70,39 +71,39 @@ public class TestCarResource2 {
 	@ArquillianResource
 	private URL url;
 
-	WebTarget   createAndQueryTarget = null;
-	WebTarget   queryTarget          = null;
-	Client      client               = null;
+	WebTarget createAndQueryTarget = null;
+	WebTarget queryTarget          = null;
+	Client    client               = null;
 
 	@After
 	public void cleanUp() {
-		client.close();
+		this.client.close();
 	}
 
 	@Before
 	public void init() /*
-	                    * throws NotSupportedException, SystemException,
-	                    * IllegalStateException, SecurityException,
-	                    * HeuristicMixedException, HeuristicRollbackException,
-	                    * RollbackException
-	                    */ {
+						 * throws NotSupportedException, SystemException,
+						 * IllegalStateException, SecurityException,
+						 * HeuristicMixedException, HeuristicRollbackException,
+						 * RollbackException
+						 */ {
 		/*
 		 * utx.begin(); entityManager.joinTransaction();
 		 * System.out.println("Dumping old records...");
 		 * entityManager.createQuery("delete from Car").executeUpdate(); utx.commit();
 		 */
 
-		String       strURL    = "http://localhost:8080/carman/resources/v2/cars";
+		String strURL = "http://localhost:8080/carman/resources/v2/cars";
 		final String startPort = System.getProperty("tomee.httpPort");
-		if (url != null) {
-			strURL = url.toString() + "/resources/v2/cars";
+		if (this.url != null) {
+			strURL = this.url.toString() + "/resources/v2/cars";
 		} else if (startPort != null) {
 			strURL = "http://localhost:" + startPort + "/carman/resources/v2/cars";
 		}
 		System.out.println("URL = " + strURL);
-		client               = ClientBuilder.newClient();
-		createAndQueryTarget = client.target(strURL);
-		queryTarget          = client.target(strURL + "?attr={attr}&value={value}");
+		this.client = ClientBuilder.newClient();
+		this.createAndQueryTarget = this.client.target(strURL);
+		this.queryTarget = this.client.target(strURL + "?attr={attr}&value={value}");
 	}
 
 	@Test
@@ -110,69 +111,70 @@ public class TestCarResource2 {
 
 		// -- Create 2 blue cars
 		final JsonObject blueCarJO = Json.createObjectBuilder()
-		        .add("engineType", EngineType.DIESEL.name())
-		        .add("color", Color.BLUE.name()).build();
+				.add("engineType", EngineType.DIESEL.name())
+				.add("color", Color.BLUE.name()).build();
 
 		// -- 1 blue car
-		Response         postRes   = createAndQueryTarget
-		        .request(MediaType.APPLICATION_JSON).post(Entity.json(blueCarJO));
-		final Car        car01     = postRes.readEntity(Car.class);
+		Response postRes = this.createAndQueryTarget.request(MediaType.APPLICATION_JSON)
+				.post(Entity.json(blueCarJO));
+		final Car car01 = postRes.readEntity(Car.class);
 		assertNotNull(car01);
 
 		// -- 2 blue car
-		postRes = createAndQueryTarget.request(MediaType.APPLICATION_JSON)
-		        .post(Entity.json(blueCarJO));
+		postRes = this.createAndQueryTarget.request(MediaType.APPLICATION_JSON)
+				.post(Entity.json(blueCarJO));
 		assertNotNull(postRes);
 		final Car car02 = postRes.readEntity(Car.class);
 		assertNotNull(car02);
 
 		// --- Get all the cars.. must be 2
-		final Response getRes = createAndQueryTarget.request(MediaType.APPLICATION_JSON)
-		        .get();
+		final Response getRes = this.createAndQueryTarget
+				.request(MediaType.APPLICATION_JSON).get();
 		assertNotNull(getRes);
 
 		// -- Using generic type as we can not use List<Car>.class
 		final GenericType<List<Car>> genCarList = new GenericType<List<Car>>() {
-												};
-		final List<Car>              carList    = getRes.readEntity(genCarList);
+		};
+		final List<Car> carList = getRes.readEntity(genCarList);
 		assertNotNull(carList);
 		assertEquals(2, carList.size());
 		carList.forEach(c -> System.out.println(c.getId()));
 
 		// -- create 1 red car
 		final JsonObject redCarJO = Json.createObjectBuilder()
-		        .add("engineType", EngineType.PETROL.name())
-		        .add("color", Color.RED.name()).build();
+				.add("engineType", EngineType.PETROL.name())
+				.add("color", Color.RED.name()).build();
 
-		postRes = createAndQueryTarget.request(MediaType.APPLICATION_JSON)
-		        .post(Entity.json(redCarJO));
+		postRes = this.createAndQueryTarget.request(MediaType.APPLICATION_JSON)
+				.post(Entity.json(redCarJO));
 		assertNotNull(postRes);
 		final Car car03 = postRes.readEntity(Car.class);
 		assertNotNull(car03);
 
 		// -- Retrieve red cars - must be 1
-		final Response  getResRed  = queryTarget.resolveTemplate("attr", "color")
-		        .resolveTemplate("value", Color.RED.name())
-		        .request(MediaType.APPLICATION_JSON).get();
+		final Response getResRed = this.queryTarget.resolveTemplate("attr", "color")
+				.resolveTemplate("value", Color.RED.name())
+				.request(MediaType.APPLICATION_JSON).get();
 
 		final List<Car> redCarList = getResRed.readEntity(genCarList);
 		assertNotNull(redCarList);
 		assertEquals(1, redCarList.size());
 
 		// -- Retrieve blue cars - must be 2
-		final Response     getResBlue    = queryTarget.resolveTemplate("attr", "color")
-		        .resolveTemplate("value", Color.BLUE.name())
-		        .request(MediaType.APPLICATION_JSON).get();
+		final Response getResBlue = this.queryTarget.resolveTemplate("attr", "color")
+				.resolveTemplate("value", Color.BLUE.name())
+				.request(MediaType.APPLICATION_JSON).get();
 
 		// -- Using JsonArray to read value instead of generic type.
 		final List<String> blueCarIdList = getResBlue.readEntity(JsonArray.class).stream()
-		        .map(jco -> jco.asJsonObject().getString("id"))
-		        .collect(Collectors.toList());
+				.map(jco -> jco.asJsonObject().getString("id"))
+				.collect(Collectors.toList());
 
 		assertNotNull(blueCarIdList);
 		assertEquals(2, blueCarIdList.size());
 
 		blueCarIdList.forEach(id -> System.out.println("id = " + id));
 
+		LockSupport.parkNanos(5000000000L);
 	}
 }

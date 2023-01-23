@@ -7,6 +7,7 @@ import java.net.URL;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.locks.LockSupport;
 
 import javax.inject.Inject;
 import javax.json.Json;
@@ -142,5 +143,6 @@ public class TestCarResource11 {
 		assertEquals(2, carList.size());
 		carList.forEach(c -> System.out.println(c.getId()));
 
+		LockSupport.parkNanos(5000000000L);
 	}
 }

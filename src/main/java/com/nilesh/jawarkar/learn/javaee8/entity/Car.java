@@ -1,39 +1,34 @@
 package com.nilesh.jawarkar.learn.javaee8.entity;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "cars")
+@AttributeOverride(name = "id", column = @Column(name = "carId"))
 @NamedQueries({ @NamedQuery(name = Car.FIND_ALL, query = "select c from Car c"),
-        @NamedQuery(name = Car.FIND_ONE, query = "select c from Car c where c.id = :id") })
-public class Car {
+		@NamedQuery(name = Car.FIND_ONE, query = "select c from Car c where c.id = :id") })
+public class Car extends BaseEntity {
 	public static final String FIND_ALL = "Car.findAll";
 	public static final String FIND_ONE = "Car.findOne";
 
-	@Id
-	private String             id;
-
 	@Enumerated(EnumType.STRING)
-	private EngineType         engineType;
+	private EngineType engineType;
 	@Enumerated(EnumType.STRING)
-	private Color              color;
+	private Color      color;
 
 	public Color getColor() {
-		return color;
+		return this.color;
 	}
 
 	public EngineType getEngineType() {
-		return engineType;
-	}
-
-	public String getId() {
-		return id;
+		return this.engineType;
 	}
 
 	public void setColor(final Color color) {
@@ -47,13 +42,4 @@ public class Car {
 	public void setEngineType(final EngineType engineType) {
 		this.engineType = engineType;
 	}
-
-	public void setId(final String id) {
-		this.id = id;
-	}
-
-	public void setIdentifier(final String id) {
-		this.id = id;
-	}
-
 }

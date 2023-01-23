@@ -10,16 +10,16 @@ import com.nilesh.jawarkar.learn.javaee8.entity.Diesel;
 import com.nilesh.jawarkar.learn.javaee8.entity.Specification;
 
 public class CarFactory {
-	
-	//-- @Named("Red")
+
+	// -- @Named("Red")
 	@Diesel
 	@Inject
 	Color defaultColor;
-	
-	public Car createCar(Specification specs) {
+
+	public Car createCar(final Specification specs) {
 		Car car = new Car();
-		car.setIdentifier(UUID.randomUUID().toString());
-		car.setColor(specs.getColor() == null? defaultColor : specs.getColor());
+		car.setId(UUID.randomUUID().toString());
+		car.setColor(specs.getColor() == null ? this.defaultColor : specs.getColor());
 		car.setEngine(specs.getEngineType());
 		return car;
 	}
