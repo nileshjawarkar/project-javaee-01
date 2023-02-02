@@ -27,27 +27,27 @@ import com.nilesh.jawarkar.learn.javaee8.entity.Specification;
 public class CarResource2 {
 
 	@Context
-	UriInfo         uriInfo;
+	UriInfo uriInfo;
 
 	@Inject
 	CarManufacturer carManufacturer;
 
 	@POST
 	public Response createCar(@NotNull final JsonObject jsonSpec) {
-		final String strColor      = (jsonSpec.containsKey("color")
-		        ? jsonSpec.getString("color")
-		        : null);
+		final String strColor = (jsonSpec.containsKey("color")
+				? jsonSpec.getString("color")
+				: null);
 		final String strEngineType = (jsonSpec.containsKey("engineType")
-		        ? jsonSpec.getString("engineType")
-		        : null);
+				? jsonSpec.getString("engineType")
+				: null);
 		if (strEngineType != null) {
 			final Specification spec = new Specification();
 			spec.setColor(strColor == null ? Color.RED : Color.valueOf(strColor));
 			spec.setEngineType(EngineType.valueOf(strEngineType));
 
-			final Car car = carManufacturer.createCar(spec);
-			final URI uri = uriInfo.getBaseUriBuilder().path(CarResource2.class)
-			        .path(CarResource2.class, "retrieveCar").build(car.getId());
+			final Car car = this.carManufacturer.createCar(spec);
+			final URI uri = this.uriInfo.getBaseUriBuilder().path(CarResource2.class)
+					.path(CarResource2.class, "retrieveCar").build(car.getId());
 			return Response.created(uri).entity(car).build();
 
 		}
@@ -57,11 +57,11 @@ public class CarResource2 {
 	@GET
 	@Path("{id}")
 	public Response retrieveCar(@PathParam("id") final String id) {
-		final Car car = carManufacturer.retrieveCar(id);
+		final Car car = this.carManufacturer.retrieveCar(id);
 		if (car != null) {
 			final JsonObject jobj = Json.createObjectBuilder().add("id", car.getId())
-			        .add("color", car.getColor().name())
-			        .add("engineType", car.getEngineType().name()).build();
+					.add("color", car.getColor().name())
+					.add("engineType", car.getEngineType().name()).build();
 			return Response.status(Response.Status.OK).entity(jobj).build();
 		}
 		return Response.status(Response.Status.NO_CONTENT).build();
@@ -69,14 +69,15 @@ public class CarResource2 {
 
 	@GET
 	public Response retrieveCars(@QueryParam("attr") final String filterByAttr,
-	        @QueryParam("value") final String filterByValue) {
-		final List<Car> list = carManufacturer.retrieveCars(filterByAttr, filterByValue);
+			@QueryParam("value") final String filterByValue) {
+		final List<Car> list = this.carManufacturer.retrieveCars(filterByAttr,
+				filterByValue);
 		if (list != null) {
 			final JsonArray resultList = list.stream()
-			        .map(c -> Json.createObjectBuilder().add("id", c.getId())
-			                .add("color", c.getColor().name())
-			                .add("engineType", c.getEngineType().name()).build())
-			        .collect(JsonCollectors.toJsonArray());
+					.map(c -> Json.createObjectBuilder().add("id", c.getId())
+							.add("color", c.getColor().name())
+							.add("engineType", c.getEngineType().name()).build())
+					.collect(JsonCollectors.toJsonArray());
 			return Response.ok().entity(resultList).build();
 		}
 		return Response.status(Response.Status.NO_CONTENT).build();

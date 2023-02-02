@@ -1,8 +1,6 @@
 package com.nilesh.jawarkar.learn.javaee8.boundry;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 
 import javax.annotation.Resource;
 import javax.enterprise.concurrent.ManagedExecutorService;
@@ -38,15 +36,16 @@ public class CarResource1 {
 		this.mes.execute(() -> response.resume(this.carManufacturer.createCar(specs)));
 	}
 
-	/*
-	 * @GET public List<Car> retrieveCars() { return
-	 * this.carManufacturer.retrieveCars(); }
-	 */
-
 	@GET
-	public CompletionStage<List<Car>> retrieveCars01() {
-		return CompletableFuture.supplyAsync(() -> this.carManufacturer.retrieveCars(),
-				this.mes);
+	public List<Car> retrieveCars() {
+		List<Car> list = this.carManufacturer.retrieveCars();
+		return list;
 	}
+
+	/*
+	 * @GET public CompletionStage<List<Car>> retrieveCars01() { return
+	 * CompletableFuture.supplyAsync(() -> this.carManufacturer.retrieveCars(),
+	 * this.mes); }
+	 */
 
 }

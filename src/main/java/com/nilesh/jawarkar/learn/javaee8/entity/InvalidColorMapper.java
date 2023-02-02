@@ -10,6 +10,7 @@ public class InvalidColorMapper implements ExceptionMapper<InvalidColor> {
 	@Override
 	public Response toResponse(final InvalidColor exception) {
 		return Response.status(Status.BAD_REQUEST).header("X-car-error", "InvalidColor")
-		        .entity(exception.getMessage()).build();
+				.entity(exception.getMessage()).build();
+
 	}
 }
