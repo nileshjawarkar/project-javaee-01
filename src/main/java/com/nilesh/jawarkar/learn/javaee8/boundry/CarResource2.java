@@ -9,12 +9,15 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.stream.JsonCollectors;
 import javax.validation.constraints.NotNull;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
@@ -24,6 +27,8 @@ import com.nilesh.jawarkar.learn.javaee8.entity.EngineType;
 import com.nilesh.jawarkar.learn.javaee8.entity.Specification;
 
 @Path("/v2/cars")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class CarResource2 {
 
 	@Context
@@ -78,7 +83,8 @@ public class CarResource2 {
 							.add("color", c.getColor().name())
 							.add("engineType", c.getEngineType().name()).build())
 					.collect(JsonCollectors.toJsonArray());
-			return Response.ok().entity(resultList).build();
+			Response res = Response.ok().entity(resultList).build();
+			return res;
 		}
 		return Response.status(Response.Status.NO_CONTENT).build();
 	}

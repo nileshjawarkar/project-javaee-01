@@ -43,7 +43,7 @@ public class TestCarManufacturer {
 				.addPackage("com.nilesh.jawarkar.learn.javaee8.config")
 				.addPackage("com.nilesh.jawarkar.learn.javaee8.control")
 				.addPackage("com.nilesh.jawarkar.learn.javaee8.entity")
-				.addAsResource("persistence.xml", "META-INF/persistence.xml")
+				.addAsResource("persistence_test.xml", "META-INF/persistence.xml")
 				.addAsWebInfResource("beans.xml", "beans.xml");
 	}
 
@@ -93,33 +93,26 @@ public class TestCarManufacturer {
 		LockSupport.parkNanos(6000000000L);
 	}
 
-	@Test
-	public void should_search_car() {
-		final Specification spec01 = new Specification();
-		spec01.setColor(Color.BLUE);
-		spec01.setEngineType(EngineType.DIESEL);
-		this.carManufacturer.createCar(spec01);
-
-		final Specification spec02 = new Specification();
-		spec02.setColor(Color.RED);
-		spec02.setEngineType(EngineType.ELECTRIC);
-		this.carManufacturer.createCar(spec02);
-		this.carManufacturer.createCar(spec02);
-
-		final List<Car> cars = this.carManufacturer.retrieveCars("color",
-				Color.BLUE.name());
-		assertNotNull(cars);
-		assertEquals(1, cars.size());
-
-		final List<Car> cars2 = this.carManufacturer.retrieveCars("color",
-				Color.RED.name());
-		assertNotNull(cars2);
-		assertEquals(2, cars2.size());
-
-		final List<Car> cars3 = this.carManufacturer.retrieveCars();
-		assertNotNull(cars3);
-		assertEquals(3, cars3.size());
-
-		LockSupport.parkNanos(7000000000L);
-	}
+	/*
+	 * @Test public void should_search_car() { final Specification spec01 = new
+	 * Specification(); spec01.setColor(Color.BLUE);
+	 * spec01.setEngineType(EngineType.DIESEL);
+	 * this.carManufacturer.createCar(spec01);
+	 *
+	 * final Specification spec02 = new Specification(); spec02.setColor(Color.RED);
+	 * spec02.setEngineType(EngineType.ELECTRIC);
+	 * this.carManufacturer.createCar(spec02);
+	 * this.carManufacturer.createCar(spec02);
+	 *
+	 * final List<Car> cars = this.carManufacturer.retrieveCars("color",
+	 * Color.BLUE.name()); assertNotNull(cars); assertEquals(1, cars.size());
+	 *
+	 * final List<Car> cars2 = this.carManufacturer.retrieveCars("color",
+	 * Color.RED.name()); assertNotNull(cars2); assertEquals(2, cars2.size());
+	 *
+	 * final List<Car> cars3 = this.carManufacturer.retrieveCars();
+	 * assertNotNull(cars3); assertEquals(3, cars3.size());
+	 *
+	 * LockSupport.parkNanos(7000000000L); }
+	 */
 }

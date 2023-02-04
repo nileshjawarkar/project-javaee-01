@@ -9,6 +9,8 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
 import com.nilesh.jawarkar.learn.javaee8.control.CarFactory;
 import com.nilesh.jawarkar.learn.javaee8.control.CarProcessing;
@@ -48,17 +50,19 @@ public class CarManufacturer {
 	// -- @Interceptors(TrackFavouriteColor.class)
 	@TrackColor(Color.ANY)
 	public Car createCar(final Specification spec) {
-		if (spec.getColor() == Color.ANY) {
+		if (spec.getColor() != null && spec.getColor() == Color.ANY) {
 			throw new InvalidColor(Color.ANY);
 		}
 		final Car car = this.carFactory.createCar(spec);
 		// -- carRepository.save(car);
 		this.entityManager.persist(car);
+
 		if (car.getEngineType() == EngineType.ELECTRIC) {
 			this.newTechCarCreatedEvent.fireAsync(new CarCreated(car.getId()));
 		} else {
 			this.carCreatedEvent.fire(new CarCreated(car.getId()));
 		}
+
 		// -- this.carProcessing.processAsync(car);
 
 		this.mes.execute(() -> this.carProcessing.process(car));
@@ -77,6 +81,7 @@ public class CarManufacturer {
 				.getResultList();
 	}
 
+	@Transactional(value = TxType.NOT_SUPPORTED)
 	public List<Car> retrieveCars(final String filterByAttr, final String filterByValue) {
 		if (filterByAttr == null || "".equals(filterByAttr) || filterByValue == null) {
 			return retrieveCars();

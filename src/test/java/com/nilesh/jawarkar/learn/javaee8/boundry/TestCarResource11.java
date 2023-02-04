@@ -55,7 +55,7 @@ public class TestCarResource11 {
 				.addPackage("com.nilesh.jawarkar.learn.javaee8.config")
 				.addPackage("com.nilesh.jawarkar.learn.javaee8.control")
 				.addPackage("com.nilesh.jawarkar.learn.javaee8.entity")
-				.addAsResource("persistence.xml", "META-INF/persistence.xml")
+				.addAsResource("persistence_test.xml", "META-INF/persistence.xml")
 				.addAsWebInfResource("beans.xml", "beans.xml");
 	}
 

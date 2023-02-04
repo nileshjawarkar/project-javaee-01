@@ -1,12 +1,14 @@
 package com.nilesh.jawarkar.learn.javaee8.entity;
 
 import javax.persistence.AttributeOverride;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -18,10 +20,23 @@ public class Car extends BaseEntity {
 	public static final String FIND_ALL = "Car.findAll";
 	public static final String FIND_ONE = "Car.findOne";
 
+	@Column(name = "engine")
 	@Enumerated(EnumType.STRING)
 	private EngineType engineType;
+
 	@Enumerated(EnumType.STRING)
-	private Color      color;
+	private Color color;
+
+	@OneToOne(cascade = CascadeType.ALL)
+	private PowerStearing stearing;
+
+	public PowerStearing getStearing() {
+		return this.stearing;
+	}
+
+	public void setStearing(final PowerStearing stearing) {
+		this.stearing = stearing;
+	}
 
 	public Color getColor() {
 		return this.color;

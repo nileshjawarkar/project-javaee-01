@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tomee>
+<Resource id="jdbc/carman" type="DataSource">
+    JdbcDriver org.apache.derby.jdbc.ClientDriver
+    JdbcUrl jdbc:derby://localhost:1527/cardb;create=true
+    UserName carman
+    Password carman123
+</Resource>
+</tomee>

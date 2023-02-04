@@ -42,13 +42,15 @@ public class TestCarResource2 {
 
 	@Deployment
 	public static WebArchive createDeployment() {
-		return ShrinkWrap.create(WebArchive.class, "carman.war")
+		WebArchive arc = ShrinkWrap.create(WebArchive.class, "carman.war")
 				.addPackage("com.nilesh.jawarkar.learn.javaee8.boundry")
 				.addPackage("com.nilesh.jawarkar.learn.javaee8.config")
 				.addPackage("com.nilesh.jawarkar.learn.javaee8.control")
 				.addPackage("com.nilesh.jawarkar.learn.javaee8.entity")
-				.addAsResource("persistence.xml", "META-INF/persistence.xml")
+				.addAsResource("persistence_test.xml", "META-INF/persistence.xml")
 				.addAsWebInfResource("beans.xml", "beans.xml");
+		System.out.println(arc.toString(true));
+		return arc;
 	}
 
 	@AfterClass
