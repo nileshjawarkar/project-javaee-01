@@ -3,12 +3,18 @@ package com.nilesh.jawarkar.learn.javaee8.entity;
 import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "seats")
 @AttributeOverride(name = "id", column = @Column(name = "seatId"))
 public class Seat extends BaseEntity {
+
+	@ManyToOne
+	@JoinColumn(name = "car_id")
+	private Car car;
 
 	private SeatBelt seatBelt;
 

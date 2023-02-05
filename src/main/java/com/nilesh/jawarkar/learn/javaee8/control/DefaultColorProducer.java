@@ -1,6 +1,5 @@
 package com.nilesh.jawarkar.learn.javaee8.control;
 
-import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 
 import com.nilesh.jawarkar.learn.javaee8.entity.Color;
@@ -15,8 +14,7 @@ public class DefaultColorProducer {
 		return Color.RED;
 	}
 
-	public void cleanUp(@Disposes Color color) {
-		// -- Some custome clean up
-		color = null;
-	}
+	/*
+	 * public void cleanUp(@Disposes Color color) { color = null; }
+	 */
 }

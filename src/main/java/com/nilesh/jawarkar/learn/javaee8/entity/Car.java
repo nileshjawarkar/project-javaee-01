@@ -1,13 +1,18 @@
 package com.nilesh.jawarkar.learn.javaee8.entity;
 
+import java.util.Collection;
+
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -28,7 +33,19 @@ public class Car extends BaseEntity {
 	private Color color;
 
 	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "stearing_id")
 	private PowerStearing stearing;
+
+	@OneToMany(mappedBy = "car", fetch = FetchType.EAGER)
+	private Collection<Seat> seats;
+
+	public Collection<Seat> getSeats() {
+		return this.seats;
+	}
+
+	public void setSeats(final Collection<Seat> seats) {
+		this.seats = seats;
+	}
 
 	public PowerStearing getStearing() {
 		return this.stearing;

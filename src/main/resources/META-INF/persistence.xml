@@ -6,10 +6,10 @@
 	<persistence-unit name="prod" transaction-type="JTA">
 		<jta-data-source>jdbc/carman</jta-data-source>
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
-        <properties>
-        <property
-	        name="javax.persistence.schema-generation.database.action"
-	        value="drop-and-create" />
-        </properties>		
+		<properties>
+			<property
+				name="javax.persistence.schema-generation.database.action"
+				value="drop-and-create" />
+		</properties>
 	</persistence-unit>
 </persistence>

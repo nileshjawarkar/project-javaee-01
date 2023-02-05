@@ -1,5 +1,6 @@
 package com.nilesh.jawarkar.learn.javaee8.boundry;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -21,6 +22,7 @@ import com.nilesh.jawarkar.learn.javaee8.entity.CarCreated;
 import com.nilesh.jawarkar.learn.javaee8.entity.Color;
 import com.nilesh.jawarkar.learn.javaee8.entity.EngineType;
 import com.nilesh.jawarkar.learn.javaee8.entity.InvalidColor;
+import com.nilesh.jawarkar.learn.javaee8.entity.Seat;
 import com.nilesh.jawarkar.learn.javaee8.entity.Specification;
 
 @Stateless
@@ -55,6 +57,12 @@ public class CarManufacturer {
 		}
 		final Car car = this.carFactory.createCar(spec);
 		// -- carRepository.save(car);
+		Collection<Seat> seats = car.getSeats();
+		if (seats != null) {
+			seats.forEach(s -> {
+				this.entityManager.persist(s);
+			});
+		}
 		this.entityManager.persist(car);
 
 		if (car.getEngineType() == EngineType.ELECTRIC) {
