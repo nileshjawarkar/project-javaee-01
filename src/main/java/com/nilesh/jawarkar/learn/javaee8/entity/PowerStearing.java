@@ -9,7 +9,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "stearing")
-@AttributeOverride(name = "id", column = @Column(name = "stearingId"))
+@AttributeOverride(name = "id", column = @Column(name = "stearing_Id"))
 public class PowerStearing extends BaseEntity {
 
 	@Enumerated(EnumType.STRING)

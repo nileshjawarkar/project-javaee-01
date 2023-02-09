@@ -9,7 +9,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "seats")
-@AttributeOverride(name = "id", column = @Column(name = "seatId"))
+@AttributeOverride(name = "id", column = @Column(name = "seat_Id"))
 public class Seat extends BaseEntity {
 
 	@ManyToOne

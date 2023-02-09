@@ -131,12 +131,12 @@ public class TestCarResource1 {
 				.request(MediaType.APPLICATION_JSON).get();
 		assertNotNull(getRes);
 
-		final GenericType<List<Car>> genCarList = new GenericType<List<Car>>() {
+		final GenericType<List<String>> genCarList = new GenericType<List<String>>() {
 		};
-		final List<Car> carList = getRes.readEntity(genCarList);
+		final List<String> carList = getRes.readEntity(genCarList);
 		assertNotNull(carList);
 		assertEquals(2, carList.size());
-		carList.forEach(c -> System.out.println(c.getId()));
+		carList.forEach(c -> System.out.println(c));
 
 		LockSupport.parkNanos(5000000000L);
 	}

@@ -128,10 +128,10 @@ public class TestCarResource11 {
 		assertNotNull(car02);
 
 		// -- Retrieval
-		final GenericType<List<Car>> genCarList = new GenericType<List<Car>>() {
+		final GenericType<List<String>> genCarList = new GenericType<List<String>>() {
 		};
 
-		List<Car> carList = null;
+		List<String> carList = null;
 		try {
 			carList = this.createAndQueryTarget.request(MediaType.APPLICATION_JSON)
 					.async().get(genCarList).get();
@@ -141,7 +141,7 @@ public class TestCarResource11 {
 
 		assertNotNull(carList);
 		assertEquals(2, carList.size());
-		carList.forEach(c -> System.out.println(c.getId()));
+		carList.forEach(c -> System.out.println(c));
 
 		LockSupport.parkNanos(5000000000L);
 	}

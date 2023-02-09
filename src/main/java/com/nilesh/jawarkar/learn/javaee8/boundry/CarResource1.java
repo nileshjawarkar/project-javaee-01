@@ -16,7 +16,6 @@ import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.MediaType;
 
-import com.nilesh.jawarkar.learn.javaee8.entity.Car;
 import com.nilesh.jawarkar.learn.javaee8.entity.Specification;
 
 @Path("cars")
@@ -37,8 +36,8 @@ public class CarResource1 {
 	}
 
 	@GET
-	public List<Car> retrieveCars() {
-		List<Car> list = this.carManufacturer.retrieveCars();
+	public List<String> retrieveCars() {
+		final List<String> list = this.carManufacturer.retrieveCarIds();
 		return list;
 	}
 

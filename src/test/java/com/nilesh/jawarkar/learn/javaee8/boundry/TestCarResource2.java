@@ -7,10 +7,8 @@ import java.net.URL;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.locks.LockSupport;
-import java.util.stream.Collectors;
 
 import javax.json.Json;
-import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -42,7 +40,7 @@ public class TestCarResource2 {
 
 	@Deployment
 	public static WebArchive createDeployment() {
-		WebArchive arc = ShrinkWrap.create(WebArchive.class, "carman.war")
+		final WebArchive arc = ShrinkWrap.create(WebArchive.class, "carman.war")
 				.addPackage("com.nilesh.jawarkar.learn.javaee8.boundry")
 				.addPackage("com.nilesh.jawarkar.learn.javaee8.config")
 				.addPackage("com.nilesh.jawarkar.learn.javaee8.control")
@@ -135,12 +133,12 @@ public class TestCarResource2 {
 		assertNotNull(getRes);
 
 		// -- Using generic type as we can not use List<Car>.class
-		final GenericType<List<Car>> genCarList = new GenericType<List<Car>>() {
+		final GenericType<List<String>> genCarList = new GenericType<List<String>>() {
 		};
-		final List<Car> carList = getRes.readEntity(genCarList);
+		final List<String> carList = getRes.readEntity(genCarList);
 		assertNotNull(carList);
 		assertEquals(2, carList.size());
-		carList.forEach(c -> System.out.println(c.getId()));
+		carList.forEach(c -> System.out.println(c));
 
 		// -- create 1 red car
 		final JsonObject redCarJO = Json.createObjectBuilder()
@@ -158,7 +156,7 @@ public class TestCarResource2 {
 				.resolveTemplate("value", Color.RED.name())
 				.request(MediaType.APPLICATION_JSON).get();
 
-		final List<Car> redCarList = getResRed.readEntity(genCarList);
+		final List<String> redCarList = getResRed.readEntity(genCarList);
 		assertNotNull(redCarList);
 		assertEquals(1, redCarList.size());
 
@@ -168,13 +166,15 @@ public class TestCarResource2 {
 				.request(MediaType.APPLICATION_JSON).get();
 
 		// -- Using JsonArray to read value instead of generic type.
-		final List<String> blueCarIdList = getResBlue.readEntity(JsonArray.class).stream()
-				.map(jco -> jco.asJsonObject().getString("id"))
-				.collect(Collectors.toList());
+		/*
+		 * final List<String> blueCarIdList =
+		 * getResBlue.readEntity(JsonArray.class).stream() .map(jco ->
+		 * jco.asJsonObject().getString("id")) .collect(Collectors.toList()); }
+		 */
 
+		final List<String> blueCarIdList = getResBlue.readEntity(genCarList);
 		assertNotNull(blueCarIdList);
 		assertEquals(2, blueCarIdList.size());
-
 		blueCarIdList.forEach(id -> System.out.println("id = " + id));
 
 		LockSupport.parkNanos(5000000000L);

@@ -30,11 +30,11 @@ public class CarCache {
 	// -- @Schedule(hour = "*")
 	public void loadCars() {
 		this.carMap.clear();
-		List<Car> list = this.entityManager.createNamedQuery(Car.FIND_ALL, Car.class)
-				.getResultList();
-		list.forEach((car) -> {
-			this.carMap.put(car.getId(), car);
-		});
+		/*
+		 * List<Car> list = this.entityManager.createNamedQuery(Car.FIND_ALL, Car.class)
+		 * .getResultList(); list.forEach((car) -> { this.carMap.put(car.getId(), car);
+		 * });
+		 */
 	}
 
 	@PostConstruct
@@ -46,7 +46,7 @@ public class CarCache {
 	}
 
 	public List<Car> retrieveCars() {
-		List<Car> list = new ArrayList<>();
+		final List<Car> list = new ArrayList<>();
 		this.carMap.forEach((id, car) -> {
 			list.add(car);
 		});

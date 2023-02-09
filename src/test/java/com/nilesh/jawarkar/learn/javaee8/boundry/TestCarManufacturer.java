@@ -86,9 +86,9 @@ public class TestCarManufacturer {
 		final Car car = this.carManufacturer.createCar(spec);
 		assertNotNull(car);
 
-		final List<Car> cars = this.carManufacturer.retrieveCars();
-		assertNotNull(cars);
-		assertEquals(cars.size(), 1);
+		final List<String> carIds = this.carManufacturer.retrieveCarIds();
+		assertNotNull(carIds);
+		assertEquals(carIds.size(), 1);
 
 		LockSupport.parkNanos(6000000000L);
 	}

@@ -1,12 +1,14 @@
 package com.nilesh.jawarkar.learn.javaee8.boundry;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
+import javax.json.JsonValue.ValueType;
 import javax.json.stream.JsonCollectors;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
@@ -72,18 +74,43 @@ public class CarResource2 {
 		return Response.status(Response.Status.NO_CONTENT).build();
 	}
 
+	@POST
+	@Path("/aa")
+	public Response retrieveSelectedCars(@NotNull final JsonArray carIds) {
+		final List<String> ids = new ArrayList<>();
+		for (int i = 0; i < carIds.size(); ++i) {
+			if (carIds.get(i).getValueType() == ValueType.STRING) {
+				ids.add(carIds.getString(i));
+			}
+		}
+
+		if (ids != null && ids.size() > 0) {
+
+			final JsonArray resultList = this.carManufacturer.retrieveSelectedCars(ids);
+			/*
+			 * final JsonArray resultList = cars.stream().map(car -> { return
+			 * Json.createObjectBuilder().add("id", car.getId()) .add("color",
+			 * car.getColor().name()) .add("engineType",
+			 * car.getEngineType().name()).build();
+			 * }).collect(JsonCollectors.toJsonArray());
+			 */
+
+			final Response res = Response.ok().entity(resultList).build();
+			return res;
+		}
+		return Response.status(Response.Status.NO_CONTENT).build();
+	}
+
 	@GET
-	public Response retrieveCars(@QueryParam("attr") final String filterByAttr,
+	public Response retrieveCarIds(@QueryParam("attr") final String filterByAttr,
 			@QueryParam("value") final String filterByValue) {
-		final List<Car> list = this.carManufacturer.retrieveCars(filterByAttr,
+		final List<String> list = this.carManufacturer.retrieveCarIds(filterByAttr,
 				filterByValue);
 		if (list != null) {
-			final JsonArray resultList = list.stream()
-					.map(c -> Json.createObjectBuilder().add("id", c.getId())
-							.add("color", c.getColor().name())
-							.add("engineType", c.getEngineType().name()).build())
-					.collect(JsonCollectors.toJsonArray());
-			Response res = Response.ok().entity(resultList).build();
+			final JsonArray resultList = list.stream().map(c -> {
+				return Json.createValue(c);
+			}).collect(JsonCollectors.toJsonArray());
+			final Response res = Response.ok().entity(resultList).build();
 			return res;
 		}
 		return Response.status(Response.Status.NO_CONTENT).build();

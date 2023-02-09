@@ -1,12 +1,11 @@
 package com.nilesh.jawarkar.learn.javaee8.control;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import javax.inject.Inject;
 
 import com.nilesh.jawarkar.learn.javaee8.entity.Car;
+import com.nilesh.jawarkar.learn.javaee8.entity.CarUser;
 import com.nilesh.jawarkar.learn.javaee8.entity.Color;
 import com.nilesh.jawarkar.learn.javaee8.entity.Diesel;
 import com.nilesh.jawarkar.learn.javaee8.entity.PowerStearing;
@@ -24,42 +23,47 @@ public class CarFactory {
 	Color defaultColor;
 
 	public Car createCar(final Specification specs) {
-		Car car = new Car();
-		car.setId(UUID.randomUUID().toString());
+		final Car car = new Car();
+		final String id = UUID.randomUUID().toString();
+		car.setId(id);
 		car.setColor(specs.getColor() == null ? this.defaultColor : specs.getColor());
 		car.setEngine(specs.getEngineType());
 
-		PowerStearing stearing = new PowerStearing();
+		car.setTestId(id);
+
+		final PowerStearing stearing = new PowerStearing();
 		stearing.setId(UUID.randomUUID().toString());
 		stearing.setStearingType(StearingType.ELECTRONIC);
 		car.setStearing(stearing);
 
-		SeatBelt belt = new SeatBelt();
+		final SeatBelt belt = new SeatBelt();
 		belt.setModel(SeatBeltModel.BM01);
 
-		Seat seat01 = new Seat();
+		final Seat seat01 = new Seat();
 		seat01.setId(UUID.randomUUID().toString());
 		seat01.setSeatBelt(belt);
 
-		Seat seat02 = new Seat();
+		final Seat seat02 = new Seat();
 		seat02.setId(UUID.randomUUID().toString());
 		seat02.setSeatBelt(belt);
 
-		Seat seat03 = new Seat();
+		final Seat seat03 = new Seat();
 		seat03.setId(UUID.randomUUID().toString());
 		seat03.setSeatBelt(belt);
 
-		Seat seat04 = new Seat();
+		final Seat seat04 = new Seat();
 		seat04.setId(UUID.randomUUID().toString());
 		seat04.setSeatBelt(belt);
 
-		List<Seat> seats = new ArrayList<>();
-		seats.add(seat01);
-		seats.add(seat02);
-		seats.add(seat03);
-		seats.add(seat04);
+		car.addSeat(seat01);
+		car.addSeat(seat02);
+		car.addSeat(seat03);
+		car.addSeat(seat04);
 
-		car.setSeats(seats);
+		final CarUser defaultUser = new CarUser();
+		defaultUser.setId(UUID.randomUUID().toString());
+		defaultUser.setName("NA");
+		car.addUser(defaultUser);
 
 		return car;
 	}
